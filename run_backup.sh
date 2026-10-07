@@ -29,6 +29,16 @@ IFS=$'\n\t'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="${SCRIPT_DIR}/.env"
 
+# Automatic .env alignment & formatting utility
+if [[ "${1:-}" == "--align-env" || "${1:-}" == "--format-env" || "${1:-}" == "-a" ]]; then
+    if [[ -f "${SCRIPT_DIR}/align_env.py" ]]; then
+        exec python3 "${SCRIPT_DIR}/align_env.py" "$ENV_FILE" "${SCRIPT_DIR}/.env.example"
+    else
+        echo "ERROR: align_env.py helper not found in ${SCRIPT_DIR}" >&2
+        exit 1
+    fi
+fi
+
 if [[ ! -f "$ENV_FILE" ]]; then
     echo "ERROR: Configuration file not found: $ENV_FILE" >&2
     exit 1
