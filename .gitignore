@@ -1,0 +1,25 @@
+# Environment and secrets
+.env
+*.env
+!.env.example
+
+# Backup dumps
+dumps/
+*.dump
+*.sql
+*.tar.gz
+
+# Logs
+logs/
+*.log
+
+# System & OS
+.DS_Store
+Thumbs.db
+
+__pycache__/
+*.pyc
+
+# AI Agents Rules & Customizations
+.agents/
+.agent/
