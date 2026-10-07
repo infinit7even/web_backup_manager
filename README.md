@@ -7,6 +7,8 @@ A resilient, multi-site automated backup manager for Linux VPS environments. It 
 ## Key Features
 
 - **Per-Site Rclone Remotes**: Every site can define its own dedicated Google Drive, Nextcloud, or R2 remotes (`SITE<N>_REMOTE_*`), completely isolating credentials and destination buckets across projects.
+- **Granular Remote Retention**: Configure a general retention period (`SITE<N>_DB_REMOTE_RETENTION_DAYS`) or dedicated per-provider days (`SITE<N>_DB_REMOTE_RETENTION_DAYS_GDRIVE`, `SITE<N>_DB_REMOTE_RETENTION_DAYS_NEXTCLOUD`).
+- **Optional Versioned Trash for Folders & CDN**: When syncing local asset folders, versioned date-stamped trash bins (`SITE<N>_FOLDER_TRASH_PATH_*`) are completely optional. If omitted, standard direct synchronization is performed.
 - **Multi-Site Discovery**: Automatically scans and processes any number of sites configured as `SITE<N>_*` in `.env` without modifying code.
 - **Local Folders & CDN Backups**: Supports backing up local asset directories (e.g. CDN folders, uploads) using either high-performance incremental sync with dated trash (`rclone sync --backup-dir`) or compressed versioned archives (`tar.gz` or `zip`).
 - **PostgreSQL Dumps & Verification**: Generates custom compressed PostgreSQL dumps (`.dump`) and verifies archive integrity using `pg_restore --list` before starting uploads.

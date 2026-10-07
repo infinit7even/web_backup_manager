@@ -280,10 +280,11 @@ backup_site_db() {
     local name="$1"
     local db_url="$2"
     local local_dir="$3"
-    local remote_retention="$4"
-    local dest_gdrive="$5"
-    local dest_nextcloud="$6"
-    local webhook="$7"
+    local remote_retention_gdrive="$4"
+    local remote_retention_nc="$5"
+    local dest_gdrive="$6"
+    local dest_nextcloud="$7"
+    local webhook="$8"
 
     CURRENT_OPERATION="database backup"
 
@@ -400,13 +401,13 @@ backup_site_db() {
         then
             ((uploaded_count+=1))
 
-            if [[ -n "$remote_retention" ]]; then
-                log "Google Drive retention: ${remote_retention} days"
+            if [[ -n "$remote_retention_gdrive" ]]; then
+                log "Google Drive retention: ${remote_retention_gdrive} days"
 
                 if ! rclone delete \
                     "$dest_gdrive" \
                     --include "*.dump" \
-                    --min-age "${remote_retention}d"
+                    --min-age "${remote_retention_gdrive}d"
                 then
                     log "WARNING: Google Drive retention cleanup encountered an issue."
                 fi
@@ -428,13 +429,13 @@ backup_site_db() {
         then
             ((uploaded_count+=1))
 
-            if [[ -n "$remote_retention" ]]; then
-                log "Nextcloud retention: ${remote_retention} days"
+            if [[ -n "$remote_retention_nc" ]]; then
+                log "Nextcloud retention: ${remote_retention_nc} days"
 
                 if ! rclone delete \
                     "$dest_nextcloud" \
                     --include "*.dump" \
-                    --min-age "${remote_retention}d"
+                    --min-age "${remote_retention_nc}d"
                 then
                     log "WARNING: Nextcloud retention cleanup encountered an issue."
                 fi
@@ -1064,11 +1065,19 @@ process_site() {
 
     # 1) Database
     if [[ "$db_is_enabled" == "true" ]]; then
+        local remote_ret_default="${!remote_ret_var:-90}"
+        local remote_ret_gdrive_var="${site_prefix}_DB_REMOTE_RETENTION_DAYS_GDRIVE"
+        local remote_ret_gdrive="${!remote_ret_gdrive_var:-$remote_ret_default}"
+
+        local remote_ret_nc_var="${site_prefix}_DB_REMOTE_RETENTION_DAYS_NEXTCLOUD"
+        local remote_ret_nc="${!remote_ret_nc_var:-$remote_ret_default}"
+
         backup_site_db \
             "$site_name" \
             "${!db_url_var:-}" \
             "${!local_dir_var:-}" \
-            "${!remote_ret_var:-14}" \
+            "$remote_ret_gdrive" \
+            "$remote_ret_nc" \
             "$db_gdrive_target" \
             "$db_nc_target" \
             "$webhook" || db_status=$?
