@@ -483,10 +483,23 @@ backup_site_db() {
 
     log "Database backup completed: $name"
 
+    local ret_desc=""
+    if [[ -n "$remote_retention_gdrive" && -n "$remote_retention_nc" && "$remote_retention_gdrive" == "$remote_retention_nc" ]]; then
+        ret_desc="${remote_retention_gdrive} days"
+    elif [[ -n "$remote_retention_gdrive" && -n "$remote_retention_nc" ]]; then
+        ret_desc="GDrive: ${remote_retention_gdrive}d, NC: ${remote_retention_nc}d"
+    elif [[ -n "$remote_retention_gdrive" ]]; then
+        ret_desc="${remote_retention_gdrive} days"
+    elif [[ -n "$remote_retention_nc" ]]; then
+        ret_desc="${remote_retention_nc} days"
+    else
+        ret_desc="N/A"
+    fi
+
     notify_discord \
         "$webhook" \
         "💾 Database Saved" \
-        "**Site:** \`$name\`\n**Dump:** \`$dump_filename\`\n**Size:** \`$dump_size\`\n**Retention:** \`${remote_retention} days\`" \
+        "**Site:** \`$name\`\n**Dump:** \`$dump_filename\`\n**Size:** \`$dump_size\`\n**Retention:** \`${ret_desc}\`" \
         3066993
 
     return 0
