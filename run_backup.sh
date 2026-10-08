@@ -1285,14 +1285,13 @@ main() {
     while IFS= read -r prefix; do
         [[ -n "$prefix" ]] && sites+=("$prefix")
     done < <(
-        compgen -v |
-            grep -E '^SITO[0-9]+_ENABLE$' |
+        (compgen -v | grep -E '^(SITE|SITO)[0-9]+_ENABLE$' || true) |
             sed 's/_ENABLE$//' |
-            sort -V
+            sort -V -u
     )
 
     if (( ${#sites[@]} == 0 )); then
-        log "WARNING: No SITO<N>_ENABLE site configurations found."
+        log "WARNING: No SITE<N>_ENABLE site configurations found."
         exit 0
     fi
 
